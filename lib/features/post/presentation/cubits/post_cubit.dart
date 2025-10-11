@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:socialapp/features/post/domain/entities/comment.dart';
 import 'package:socialapp/features/post/domain/entities/post.dart';
 import 'package:socialapp/features/post/domain/repos/post_repo.dart';
 import 'package:socialapp/features/post/presentation/cubits/post_states.dart';
@@ -66,4 +67,24 @@ class PostCubit extends Cubit<PostState>{
 
   }
 
+  Future<void> addcomment(String postId, Comment comment) async {
+    try{
+      await postRepo.addComment(postId, comment);
+
+      await  fetchAllPosts();
+    }catch (e){
+      emit(PostsError("Failed to add comment: $e"));
+    }
+  }
+
+  Future<void> deleteComment(String postId, String commentId) async {
+    try{
+
+      await postRepo.deleteComment(postId, commentId);
+
+      await fetchAllPosts();
+    } catch(e) {
+      emit(PostsError("Failed to delete comment: $e"));
+    }
+  }
 }

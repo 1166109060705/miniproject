@@ -2,9 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/features/auth/domain/entities/app_user.dart';
+import 'package:socialapp/features/auth/presentation/components/my_text_field.dart';
 import 'package:socialapp/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:socialapp/features/post/domain/entities/comment.dart';
 import 'package:socialapp/features/post/domain/entities/post.dart';
 import 'package:socialapp/features/post/presentation/cubits/post_cubit.dart';
+import 'package:socialapp/features/post/presentation/cubits/post_states.dart';
 import 'package:socialapp/features/profile/domain/entities/profile_user.dart';
 import 'package:socialapp/features/profile/presentation/cubits/profile_cubit.dart';
 
@@ -82,6 +85,62 @@ void toggleLikePost() {
 
 }
 
+
+final commentTextController = TextEditingController();
+
+void openNewCommentBox() {
+  showDialog(
+    context: context, 
+    builder: (context) => AlertDialog(
+
+      content: MyTextField(
+        controller: commentTextController, 
+        hintText: "Type a comment", 
+        obscureText: false,
+        ),
+
+        actions: [
+
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(), 
+            child: const Text("cancel"),
+            ),
+
+          TextButton(
+            onPressed: () {
+              addComment();
+              Navigator.of(context).pop();
+            }, 
+            child: const Text("Save"),
+            ),
+
+
+        ],
+    ),
+  );
+}
+
+  void addComment() {
+
+    final newComment = Comment(
+      id: DateTime.now().millisecondsSinceEpoch.toString(), 
+      postId: widget.post.id,
+      userId: widget.post.userId, 
+      userName: widget.post.userName, 
+      text: commentTextController.text, 
+      timestamp: DateTime.now(),
+      );
+
+      if (commentTextController.text.isNotEmpty) {
+        postCubit.addcomment(widget.post.id, newComment);
+      }
+  }
+
+  @override
+  void dispose() {
+    commentTextController.dispose();
+    super.dispose();
+  }
 
 
   void showOptions() {
@@ -206,19 +265,68 @@ void toggleLikePost() {
                 ),
        
             
-                Icon(Icons.comment),
+                GestureDetector(
+                  onTap: openNewCommentBox,
+                  child: Icon(Icons.comment,
+                  color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
 
-                Text("0"),
+                const SizedBox(width: 5),
+
+                Text(
+                  widget.post.comments.length.toString(),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 12,
+                    ),
+                  ),
             
                 const Spacer(),
             
                 Text(widget.post.timestamp.toString()),
-            
               ],
-            
             ),
-          )
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+            child: Row(
+              children: [
+              Text(widget.post.userName, 
+              style: const TextStyle(
+                fontWeight: FontWeight.bold),
+              ),
 
+              const SizedBox(width: 10),
+            
+              Text(widget.post.text),
+            ],
+          ),
+        ),
+
+        BlocBuilder<PostCubit, PostState>(
+          builder: (context, state) {
+            if (state is PostsLoaded) {
+              final post = state.posts.firstWhere((post) => (post.id == widget.post.id));
+            
+              if (post.comments.isEmpty) {
+                int showCommentCount = post.comments.length;
+
+                return ListView.builder(
+                  itemCount: showCommentCount,
+                  itemBuilder: (context, index) {
+
+                    final comment = post.comments[index];
+
+
+
+                    
+                  },
+                );
+              }
+            }
+        },
+        )
 
 
         ],
