@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:socialapp/features/profile/domain/entities/profile_user.dart';
 import 'package:socialapp/features/profile/domain/repos/profile_repo.dart';
 import 'package:socialapp/features/profile/presentation/cubits/profile_state.dart';
@@ -22,7 +21,7 @@ class ProfileCubit extends Cubit<ProfileState>{
 
             if(user != null){
                 emit(ProfileLoaded(user));
-            }else{
+            } else {
                 emit(ProfileError("User not found"));
             }
         } catch (e){
@@ -47,7 +46,7 @@ class ProfileCubit extends Cubit<ProfileState>{
         
         try{
 
-            final currentUser= await profileRepo.fetchUserProfile(uid);
+            final currentUser = await profileRepo.fetchUserProfile(uid);
 
             if (currentUser == null){
                 emit (ProfileError("Failed to fetch user for Profile update"));
@@ -77,16 +76,32 @@ class ProfileCubit extends Cubit<ProfileState>{
         }
 
 
-        final updateProfile = currentUser.copyWith(
+        final updatedProfile = currentUser.copyWith(
           newBio: newBio ?? currentUser.bio,
           newProfileImageUrl: imageDownloadUrl ?? currentUser.profileImageUrl,
           );
         
         
-        await profileRepo.updateProfile(updateProfile);
+        await profileRepo.updateProfile(updatedProfile);
         await fetchUserProfile(uid);
         }catch(e){
             emit(ProfileError("Error updating profile: $e"));
         }
     }
+
+    Future<void> toggleFollow(String currentUserId, String targetUserId) async {
+      try{
+
+        await profileRepo.toggleFollow(currentUserId, targetUserId);
+
+    } catch(e){
+      emit(ProfileError("Error toggling follow: $e"));
+    }
+
+    }
+
+
+
+
+
 }       

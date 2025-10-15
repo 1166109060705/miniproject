@@ -13,7 +13,7 @@ class FirebasePostRepo implements PostRepo{
   Future<void> createPost(Post post) async{
     try {
 
-      await postsCollection.doc(post.id).set(post.tojson());
+      await postsCollection.doc(post.id).set(post.toJson());
     }catch (e) {
       throw Exception('Error creating post: $e');
     }
@@ -28,10 +28,10 @@ class FirebasePostRepo implements PostRepo{
   Future<List<Post>> fetchAllPosts() async{
     try{
 
-      final postSnapshot = 
+      final postsSnapshot = 
         await postsCollection.orderBy('timestamp', descending: true).get();
 
-      final List<Post> allPosts = postSnapshot.docs
+      final List<Post> allPosts = postsSnapshot.docs
         .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
       
@@ -46,10 +46,10 @@ class FirebasePostRepo implements PostRepo{
   Future<List<Post>> fetchPostsByUserId(String userId) async{
     try{
 
-      final postSnapshot = 
+      final postsSnapshot = 
             await postsCollection.where('userId', isEqualTo: userId).get();
        
-      final userPosts = postSnapshot.docs
+      final userPosts = postsSnapshot.docs
         .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
 

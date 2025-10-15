@@ -9,9 +9,9 @@ class AppUser {
     required this.name,
   });
 
-  Map<String, dynamic> tojson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': uid,
+      'uid': uid,
       'email': email,
       'name': name,
     };
@@ -19,7 +19,7 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> jsonUser) {
     return AppUser(
-      uid: jsonUser['id'],
+      uid: jsonUser['uid'],
       email: jsonUser['email'],
       name: jsonUser['name'],
     );

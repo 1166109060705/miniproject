@@ -57,20 +57,21 @@ class _UploadPostPageState extends State<UploadPostPage> {
   }
 
   void uploadPost() {
-    if(imagePickedFile == null || textController.text.isEmpty){
+    // Check if at least one of image or text is provided
+    if(imagePickedFile == null && textController.text.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please provide both image and caption")));
+        const SnackBar(content: Text("Please provide either an image or caption")));
       return;
     }
 
     final newPost = Post(
       id: DateTime.now().millisecondsSinceEpoch.toString(), 
       userId: currentUser!.uid, 
-      userName: currentUser!.name, 
+      userName: currentUser!.name, // This field will be saved as 'userName' in Firestore
       text: textController.text, 
       imageUrl: '', 
       timestamp: DateTime.now(),
-      likes: [],
+      likes: [], // Will be saved as lowercase 'likes' in Firestore
       comments: [],
       );
 
@@ -99,7 +100,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
   @override
   Widget build(BuildContext context) {
 
-    return BlocConsumer<PostCubit, PostState>(
+    return BlocConsumer<PostCubit,PostState>(
       builder: (context, state){
         print(state);
 
@@ -132,7 +133,8 @@ class _UploadPostPageState extends State<UploadPostPage> {
         actions: [
           IconButton(
             onPressed: uploadPost, 
-            icon: const Icon(Icons.upload),)
+            icon: const Icon(Icons.upload),
+            )
         ],
       ),
 

@@ -31,8 +31,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
          const SnackBar(
            content: Text("Please fill all the fields"),
-        ),
-      );
+        ));
     }
   }
 
@@ -112,14 +111,6 @@ class _LoginPageState extends State<LoginPage> {
                    ),
                  ],
                )
-            
-            
-            
-            
-            
-            
-            
-            
             ],
           ),
         ),

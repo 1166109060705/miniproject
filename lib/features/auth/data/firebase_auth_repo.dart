@@ -4,23 +4,21 @@ import 'package:socialapp/features/auth/domain/entities/app_user.dart';
 import 'package:socialapp/features/auth/domain/repos/auth_repo.dart';
 
 class FirebaseAuthRepo implements AuthRepo {
-
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   @override
-  Future<AppUser?> loginwithEmailPassword(String email, String password) async {
+  Future<AppUser?> loginWithEmailPassword(String email, String password) async {
     try{
 
       UserCredential userCredential = await firebaseAuth
       .signInWithEmailAndPassword(email: email, password: password);
 
+
       DocumentSnapshot userDoc = await firebaseFirestore
-      .collection('users')
-      .doc(userCredential.user!.uid)
-      .get();
-
-
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .get();
 
 
       AppUser user = AppUser(
@@ -37,10 +35,12 @@ class FirebaseAuthRepo implements AuthRepo {
   }
 
   @override
-  Future<AppUser?> registerwithEmailPassword(String name, String email, String password) async{
+  Future<AppUser?> registerWithEmailPassword(
+    String name, String email, String password) async{
     try{
 
-      UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await firebaseAuth
+      .createUserWithEmailAndPassword(email: email, password: password);
 
 
       AppUser user = AppUser(
@@ -50,9 +50,9 @@ class FirebaseAuthRepo implements AuthRepo {
       ); 
 
       await firebaseFirestore
-      .collection("user")
-      .doc( user.uid)
-      .set(user.tojson());
+      .collection("users")
+      .doc(user.uid)
+      .set(user.toJson());
 
 
       return user;
@@ -84,7 +84,6 @@ class FirebaseAuthRepo implements AuthRepo {
     if(!userDoc.exists){
       return null;
       }
-
 
     return AppUser(
       uid: firebaseUser.uid,

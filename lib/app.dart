@@ -9,8 +9,10 @@ import 'package:socialapp/features/post/data/firebase_post_repo.dart';
 import 'package:socialapp/features/post/presentation/cubits/post_cubit.dart';
 import 'package:socialapp/features/profile/data/firebase_profile_repo.dart';
 import 'package:socialapp/features/profile/presentation/cubits/profile_cubit.dart';
+import 'package:socialapp/features/search/data/firebase_search_repo.dart';
+import 'package:socialapp/features/search/presentation/cubits/search_cubit.dart';
 import 'package:socialapp/features/storage/data/firebase_storage_repo.dart';
-import 'package:socialapp/themes/light_mode.dart';
+import 'package:socialapp/themes/theme_cubit.dart';
 
 
 
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
 
   final firebasePostRepo = FirebasePostRepo();
 
+  final firebaseSearchRepo = FirebaseSearchRepo(); 
+
   MyApp({super.key});
 
   @override
@@ -32,25 +36,37 @@ class MyApp extends StatelessWidget {
       providers: [
 
         BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit(authRepo: firebaseAuthRepo)..checkAuth(),
+          create: (context) => 
+          AuthCubit(authRepo: firebaseAuthRepo)..checkAuth(),
         ),
-
+ 
         BlocProvider<ProfileCubit>(
           create: (context) => ProfileCubit(
             profileRepo: firebaseProfileRepo,
             storageRepo: firebaseStorageRepo,
-            ),),
+            ),
+          ),
 
         BlocProvider<PostCubit>(
           create: (context) => PostCubit(
             postRepo: firebasePostRepo,
             storageRepo: firebaseStorageRepo,
-            ),)   
+            ),
+          ),
+
+          BlocProvider<SearchCubit>(
+            create: (context) => SearchCubit(searchRepo: firebaseSearchRepo),
+          ),
+
+          BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
       ],
-      child: MaterialApp(
+
+      child: BlocBuilder<ThemeCubit,ThemeData>(
+        builder: (context, currentTheme) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Social App',
-        theme: lightMode,
+        theme: currentTheme,
+
+
         home: BlocConsumer<AuthCubit, AuthState>(
           builder: (context, authState) {
             print(authState);
@@ -65,7 +81,9 @@ class MyApp extends StatelessWidget {
             //loading...
             else {
               return const Scaffold(
-                body: Center(child: CircularProgressIndicator(),),
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             }
           },
@@ -75,8 +93,8 @@ class MyApp extends StatelessWidget {
                 .showSnackBar(SnackBar(content: Text(state.message)));
             }
           },
-        )
+        ),
       ),
-      );
+        ));
   }
 }

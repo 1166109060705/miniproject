@@ -35,7 +35,7 @@ class Post {
     );
   }
 
-  Map<String, dynamic> tojson() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'userId': userId,
@@ -43,7 +43,7 @@ class Post {
       'text': text,
       'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
-      'Likes': likes,
+      'likes': likes,
       'comments': comments.map((comment) => comment.toJson()).toList(),
     };
   }
@@ -57,12 +57,12 @@ class Post {
 
 
     return Post(
-      id: json['id'],
-      userId: json['userId'],
-      userName: json['name'],
-      text: json['text'],
-      imageUrl: json['imageUrl'],
-      timestamp: (json['timestamp'] as Timestamp).toDate(),
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      userName: json['userName'] ?? '', // Fixed: using userName instead of name
+      text: json['text'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       likes: List<String>.from(json['likes'] ?? []),
       comments: comments,
     );
