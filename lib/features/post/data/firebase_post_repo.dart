@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:socialapp/features/post/domain/entities/comment.dart';
 import 'package:socialapp/features/post/domain/entities/post.dart';
+import 'package:socialapp/features/post/domain/entities/report.dart';
 import 'package:socialapp/features/post/domain/repos/post_repo.dart';
 
 class FirebasePostRepo implements PostRepo{
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   final CollectionReference postsCollection = 
-  FirebaseFirestore.instance.collection('posts');
+    FirebaseFirestore.instance.collection('posts');
+  
+  final CollectionReference reportsCollection = 
+    FirebaseFirestore.instance.collection('reports');
 
   @override
   Future<void> createPost(Post post) async{
@@ -62,9 +66,7 @@ class FirebasePostRepo implements PostRepo{
   @override
   Future<void> toggleLikePost(String postId, String userId) async{
     try {
-      
       final postDoc = await postsCollection.doc(postId).get();
-
       if (postDoc.exists){
         final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
 
@@ -72,18 +74,49 @@ class FirebasePostRepo implements PostRepo{
 
         if (hasLiked) {
           post.likes.remove(userId);
-          } else{
-            post.likes.add(userId);
-          }
+        } else {
+          post.likes.add(userId);
+          post.dislikes.remove(userId); // Remove dislike if exists
+        }
 
-          await postsCollection.doc(postId).update({
-            'likes': post.likes,
+        await postsCollection.doc(postId).update({
+          'likes': post.likes,
+          'dislikes': post.dislikes,
           });
-         } else {
+        } else {
           throw Exception("Post not found");
-         }
+        }
     } catch (e) {
       throw Exception("Error toggling like: $e");
+    }
+  }
+
+  @override
+  Future<void> toggleDislikePost(String postId, String userId) async {
+    try {
+      final postDoc = await postsCollection.doc(postId).get();
+
+      if (postDoc.exists) {
+        final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
+
+        final hasDisliked = post.dislikes.contains(userId);
+
+        if (hasDisliked) {
+          post.dislikes.remove(userId);
+        } else {
+          post.dislikes.add(userId);
+          post.likes.remove(userId); // Remove like if exists
+        }
+
+        await postsCollection.doc(postId).update({
+          'likes': post.likes,
+          'dislikes': post.dislikes,
+        });
+      } else {
+        throw Exception("Post not found");
+      }
+    } catch (e) {
+      throw Exception("Error toggling dislike: $e");
     }
   }
 
@@ -130,6 +163,15 @@ class FirebasePostRepo implements PostRepo{
       }
     } catch(e){
       throw Exception("Error deleting comment: $e");
+    }
+  }
+
+  @override
+  Future<void> reportPost(Report report) async {
+    try {
+      await reportsCollection.doc(report.id).set(report.toJson());
+    } catch (e) {
+      throw Exception('Error reporting post: $e');
     }
   }
 }

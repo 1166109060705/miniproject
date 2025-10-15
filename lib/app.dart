@@ -13,6 +13,8 @@ import 'package:socialapp/features/search/data/firebase_search_repo.dart';
 import 'package:socialapp/features/search/presentation/cubits/search_cubit.dart';
 import 'package:socialapp/features/storage/data/firebase_storage_repo.dart';
 import 'package:socialapp/themes/theme_cubit.dart';
+import 'package:socialapp/features/chat/data/firebase_chat_repo.dart';
+import 'package:socialapp/features/chat/presentation/cubits/chat_cubit.dart';
 
 
 
@@ -26,7 +28,9 @@ class MyApp extends StatelessWidget {
 
   final firebasePostRepo = FirebasePostRepo();
 
-  final firebaseSearchRepo = FirebaseSearchRepo(); 
+  final firebaseSearchRepo = FirebaseSearchRepo();
+
+  final firebaseChatRepo = FirebaseChatRepo();
 
   MyApp({super.key});
 
@@ -59,6 +63,10 @@ class MyApp extends StatelessWidget {
           ),
 
           BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
+
+          BlocProvider<ChatCubit>(
+            create: (context) => ChatCubit(chatRepo: firebaseChatRepo),
+          ),
       ],
 
       child: BlocBuilder<ThemeCubit,ThemeData>(

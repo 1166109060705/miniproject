@@ -13,6 +13,7 @@ import 'package:socialapp/features/profile/presentation/cubits/profile_cubit.dar
 import 'package:socialapp/features/profile/presentation/cubits/profile_state.dart';
 import 'package:socialapp/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:socialapp/features/profile/presentation/pages/follower_page.dart';
+import 'package:socialapp/features/chat/presentation/pages/chat_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final String uid;
@@ -96,15 +97,24 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text(user.name),
             foregroundColor: Theme.of(context).colorScheme.primary,
             actions: [
-
-              if(isOwnPost)
-              IconButton(
-                onPressed:() => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditProfilePage(user: user,),
+              if (!isOwnPost)
+                IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(receiver: user),
+                    ),
+                  ),
+                  icon: const Icon(Icons.chat_bubble_outline),
+                ),
+              if (isOwnPost)
+                IconButton(
+                  onPressed:() => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfilePage(user: user,),
                     )),
-                icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.settings),
                 )
             ],
           ),

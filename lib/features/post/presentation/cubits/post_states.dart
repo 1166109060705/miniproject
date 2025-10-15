@@ -16,5 +16,6 @@ class PostsError extends PostState {
 class PostsLoaded extends PostState {
   final List<Post>  posts;
   PostsLoaded(this.posts);
-
 }
+
+class PostReported extends PostState {}

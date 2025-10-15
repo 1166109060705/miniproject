@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/features/post/domain/entities/comment.dart';
 import 'package:socialapp/features/post/domain/entities/post.dart';
+import 'package:socialapp/features/post/domain/entities/report.dart';
 import 'package:socialapp/features/post/domain/repos/post_repo.dart';
 import 'package:socialapp/features/post/presentation/cubits/post_states.dart';
 import 'package:socialapp/features/storage/domain/storage_repo.dart';
@@ -79,12 +80,37 @@ class PostCubit extends Cubit<PostState>{
 
   Future<void> deleteComment(String postId, String commentId) async {
     try{
-
       await postRepo.deleteComment(postId, commentId);
-
       await fetchAllPosts();
     } catch(e) {
       emit(PostsError("Failed to delete comment: $e"));
+    }
+  }
+
+  Future<void> toggleDislikePost(String postId, String userId) async {
+    try {
+      await postRepo.toggleDislikePost(postId, userId);
+    } catch(e) {
+      emit(PostsError("Failed to toggle dislike: $e"));
+    }
+  }
+
+  Future<void> reportPost(String postId, String reporterId, String reporterName, String reason, String? details) async {
+    try {
+      final report = Report(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        postId: postId,
+        reporterId: reporterId,
+        reporterName: reporterName,
+        reason: reason,
+        details: details,
+        timestamp: DateTime.now(),
+      );
+
+      await postRepo.reportPost(report);
+    } catch (e) {
+      emit(PostsError("Failed to submit report: $e"));
+      throw e;
     }
   }
 }

@@ -9,6 +9,7 @@ class Post {
   final String imageUrl;
   final DateTime timestamp;
   final List<String> likes;
+  final List<String> dislikes;
   final List<Comment> comments;
 
   Post({
@@ -19,18 +20,20 @@ class Post {
     required this.imageUrl,
     required this.timestamp,
     required this.likes,
+    required this.dislikes,
     required this.comments
   });
 
   Post copyWith({String? imageUrl}) {
     return Post(
-      id: id ,
+      id: id,
       userId: userId,
       userName: userName,
       text: text,
       imageUrl: imageUrl ?? this.imageUrl,
       timestamp: timestamp,
       likes: likes,
+      dislikes: dislikes,
       comments: comments
     );
   }
@@ -44,6 +47,7 @@ class Post {
       'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
       'likes': likes,
+      'dislikes': dislikes,
       'comments': comments.map((comment) => comment.toJson()).toList(),
     };
   }
@@ -59,11 +63,12 @@ class Post {
     return Post(
       id: json['id'] ?? '',
       userId: json['userId'] ?? '',
-      userName: json['userName'] ?? '', // Fixed: using userName instead of name
+      userName: json['userName'] ?? '',
       text: json['text'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
       timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       likes: List<String>.from(json['likes'] ?? []),
+      dislikes: List<String>.from(json['dislikes'] ?? []),
       comments: comments,
     );
   }

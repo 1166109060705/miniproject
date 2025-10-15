@@ -5,6 +5,7 @@ import 'package:socialapp/features/home/presentation/components/my_drawer_tile.d
 import 'package:socialapp/features/profile/presentation/pages/profile_page.dart';
 import 'package:socialapp/features/search/presentation/pages/search_page.dart';
 import 'package:socialapp/features/settings/pages/settings_page.dart';
+import 'package:socialapp/features/chat/presentation/pages/chat_list_page.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -65,6 +66,16 @@ class MyDrawer extends StatelessWidget {
                   context, MaterialPageRoute(
                     builder: (context) => const SearchPage(),
                     
+                    ),
+                  ),
+                ),
+
+              MyDrawerTile(
+                title: "M E S S A G E S",
+                icon: Icons.message,
+                onTap: () => Navigator.push(
+                  context, MaterialPageRoute(
+                    builder: (context) => const ChatListPage(),
                     ),
                   ),
                 ),

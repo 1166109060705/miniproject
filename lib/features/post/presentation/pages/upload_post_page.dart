@@ -24,7 +24,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
 
   Uint8List? webImage;
 
-  final textController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   AppUser? currentUser;
 
@@ -56,110 +56,197 @@ class _UploadPostPageState extends State<UploadPostPage> {
     }
   }
 
-  void uploadPost() {
-    // Check if at least one of image or text is provided
-    if(imagePickedFile == null && textController.text.isEmpty){
+  Future<void> uploadPost() async {
+    final text = descriptionController.text.trim();
+    
+    // Validate input
+    if (imagePickedFile == null && text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please provide either an image or caption")));
+        const SnackBar(
+          content: Text("Please provide either an image or caption"),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
-    final newPost = Post(
-      id: DateTime.now().millisecondsSinceEpoch.toString(), 
-      userId: currentUser!.uid, 
-      userName: currentUser!.name, // This field will be saved as 'userName' in Firestore
-      text: textController.text, 
-      imageUrl: '', 
-      timestamp: DateTime.now(),
-      likes: [], // Will be saved as lowercase 'likes' in Firestore
-      comments: [],
+    try {
+      // Create post entity
+      final newPost = Post(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        userId: currentUser!.uid,
+        userName: currentUser!.name,
+        text: text,
+        imageUrl: '',
+        timestamp: DateTime.now(),
+        likes: [],
+        dislikes: [],
+        comments: [],
       );
 
-    final postCubit = context.read<PostCubit>();
+      final postCubit = context.read<PostCubit>();
 
-    if (kIsWeb) {
-      postCubit.createPost(
-        newPost, 
-        imageBytes: imagePickedFile?.bytes
+      // Upload post with image if selected
+      if (imagePickedFile != null) {
+        if (kIsWeb) {
+          if (webImage == null) {
+            throw Exception("Failed to load image");
+          }
+          await postCubit.createPost(newPost, imageBytes: webImage);
+        } else {
+          if (imagePickedFile!.path == null) {
+            throw Exception("Failed to load image");
+          }
+          await postCubit.createPost(newPost, imagePath: imagePickedFile!.path);
+        }
+      } else {
+        // Text-only post
+        await postCubit.createPost(newPost);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to create post: ${e.toString()}"),
+            backgroundColor: Colors.red,
+          ),
         );
-    } else {
-      postCubit.createPost(
-        newPost, 
-        imagePath: imagePickedFile?.path
-        );
-
+      }
     }
   }
 
   @override 
   void dispose() {
-    textController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return BlocConsumer<PostCubit,PostState>(
-      builder: (context, state){
-        print(state);
-
-        if (state is PostsLoading || state is PostUploading) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
+    return BlocConsumer<PostCubit, PostState>(
+      listener: (context, state) {
+        if (state is PostsLoaded) {
+          Navigator.pop(context);
+        } else if (state is PostsError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
             ),
           );
         }
-
-          return buildUploadPage();
-
-      }, 
-      listener: (context, state) {
-        if (state is PostsLoaded){
-          Navigator.pop(context);
-        }
-
-
       },
-      );
+      builder: (context, state) {
+        return Stack(
+          children: [
+            buildUploadPage(),
+            if (state is PostsLoading || state is PostUploading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+          ],
+        );
+      },
+    );
   }
 
-  Widget buildUploadPage(){
+  Widget buildUploadPage() {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create New Post"),
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
-          IconButton(
-            onPressed: uploadPost, 
-            icon: const Icon(Icons.upload),
-            )
+          TextButton.icon(
+            onPressed: uploadPost,
+            icon: const Icon(Icons.send),
+            label: const Text("Post"),
+          ),
         ],
       ),
-
-      body:  Center(
-        child: Column(
-          children: [
-            if (kIsWeb && webImage != null)
-              Image.memory(webImage!),
-
-            if (!kIsWeb && imagePickedFile != null)
-              Image.file(File(imagePickedFile!.path!)),
-
-            MaterialButton(
-              onPressed: pickImage, 
-              color: Colors.blue,
-              child: const Text("Pick Image"),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Caption TextField
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: MyTextField(
+                  controller: descriptionController,
+                  hintText: 'Write a caption...',
+                  obscureText: false,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                ),
               ),
-
-            MyTextField(
-              controller: textController, 
-              hintText: "caption", 
-              obscureText: false),
-
-
-          ],
+              const SizedBox(height: 16),
+              
+              // Image Preview
+              if (imagePickedFile != null)
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: kIsWeb 
+                      ? Image.memory(
+                          webImage!,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(imagePickedFile!.path!),
+                          fit: BoxFit.cover,
+                        ),
+                  ),
+                ),
+              
+              const SizedBox(height: 16),
+              
+              // Image Picker Button
+              Center(
+                child: MaterialButton(
+                  onPressed: pickImage,
+                  color: Theme.of(context).colorScheme.primary,
+                  textColor: Theme.of(context).colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        imagePickedFile == null 
+                          ? Icons.add_photo_alternate
+                          : Icons.edit,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        imagePickedFile == null
+                          ? "Add Photo"
+                          : "Change Photo",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

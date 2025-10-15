@@ -1,5 +1,6 @@
 import 'package:socialapp/features/post/domain/entities/comment.dart';
 import 'package:socialapp/features/post/domain/entities/post.dart';
+import 'package:socialapp/features/post/domain/entities/report.dart';
 
 abstract class PostRepo {
   Future<List<Post>> fetchAllPosts();
@@ -7,6 +8,8 @@ abstract class PostRepo {
   Future<void> deletePost(String postId);
   Future<List<Post>> fetchPostsByUserId(String userId);
   Future<void> toggleLikePost(String postId, String userId);
+  Future<void> toggleDislikePost(String postId, String userId);
   Future<void> addComment(String postId, Comment comment);
-  Future<void>  deleteComment(String postId, String commentId);
+  Future<void> deleteComment(String postId, String commentId);
+  Future<void> reportPost(Report report);
 }
