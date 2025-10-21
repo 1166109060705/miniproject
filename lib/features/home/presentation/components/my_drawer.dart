@@ -6,7 +6,10 @@ import 'package:socialapp/features/profile/presentation/pages/profile_page.dart'
 import 'package:socialapp/features/search/presentation/pages/search_page.dart';
 import 'package:socialapp/features/settings/pages/settings_page.dart';
 import 'package:socialapp/features/chat/presentation/pages/chat_list_page.dart';
+<<<<<<< HEAD
 import 'package:socialapp/features/group/presentation/pages/group_list_page.dart';
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -82,6 +85,7 @@ class MyDrawer extends StatelessWidget {
                 ),
 
               MyDrawerTile(
+<<<<<<< HEAD
                 title: "G R O U P S",
                 icon: Icons.group,
                 onTap: () => Navigator.push(
@@ -92,6 +96,8 @@ class MyDrawer extends StatelessWidget {
                 ),
 
               MyDrawerTile(
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
                 title: "S E T T I N G S",
                 icon: Icons.settings,
                 onTap: () => Navigator.push(

@@ -290,6 +290,7 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
+<<<<<<< HEAD
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
@@ -305,6 +306,8 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
   @override
   void dispose() {
     commentTextController.dispose();
@@ -359,7 +362,11 @@ class _PostTileState extends State<PostTile> {
                   ),
                   const SizedBox(width: 8),
                   Text(
+<<<<<<< HEAD
                     _formatTimestamp(widget.post.timestamp),
+=======
+                    '${widget.post.timestamp.day}/${widget.post.timestamp.month} ${widget.post.timestamp.hour.toString().padLeft(2, '0')}:${widget.post.timestamp.minute.toString().padLeft(2, '0')}',
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 12,

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+import 'dart:typed_data';
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socialapp/features/auth/presentation/cubits/auth_cubit.dart';
+<<<<<<< HEAD
+=======
+import 'package:socialapp/features/chat/domain/entities/message.dart';
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
 import 'package:socialapp/features/chat/presentation/components/message_bubble.dart';
 import 'package:socialapp/features/chat/presentation/cubits/chat_cubit.dart';
 import 'package:socialapp/features/chat/presentation/cubits/chat_state.dart';

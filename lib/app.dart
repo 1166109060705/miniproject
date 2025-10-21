@@ -15,8 +15,11 @@ import 'package:socialapp/features/storage/data/firebase_storage_repo.dart';
 import 'package:socialapp/themes/theme_cubit.dart';
 import 'package:socialapp/features/chat/data/firebase_chat_repo.dart';
 import 'package:socialapp/features/chat/presentation/cubits/chat_cubit.dart';
+<<<<<<< HEAD
 import 'package:socialapp/features/group/data/firebase_group_repo.dart';
 import 'package:socialapp/features/group/presentation/cubits/group_cubit.dart';
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
 
 
 
@@ -34,8 +37,11 @@ class MyApp extends StatelessWidget {
 
   final firebaseChatRepo = FirebaseChatRepo();
 
+<<<<<<< HEAD
   final firebaseGroupRepo = FirebaseGroupRepo();
 
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
   MyApp({super.key});
 
   @override
@@ -71,6 +77,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<ChatCubit>(
             create: (context) => ChatCubit(chatRepo: firebaseChatRepo),
           ),
+<<<<<<< HEAD
 
           BlocProvider<GroupCubit>(
             create: (context) => GroupCubit(
@@ -78,6 +85,8 @@ class MyApp extends StatelessWidget {
               storageRepo: firebaseStorageRepo,
             ),
           ),
+=======
+>>>>>>> cbeeeaee41c1ab1bacd462e8a36c8af2e08be77a
       ],
 
       child: BlocBuilder<ThemeCubit,ThemeData>(
